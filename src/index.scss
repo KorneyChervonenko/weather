@@ -1,0 +1,44 @@
+@import './styles/_reset.scss';
+@import './styles/_helpers.scss';
+@import './styles/_vars.scss';
+
+html {
+	// 	@extend .full-space;
+
+	// 	display: flex;
+	// 	flex-direction: column;
+	// 	/* justify-content: center; */
+	// 	align-items: center;
+
+	// 	background-color: cadetblue;
+}
+
+body {
+	// @extend .full-space;
+
+	// display: flex;
+	// flex-direction: column;
+	// align-items: center;
+	// background-color: coral;
+	// // background-color: inherit;
+}
+
+#root {
+	// @extend .full-space;
+
+	// display: flex;
+	// flex-direction: column;
+	// /* justify-content: center; */
+	// align-items: center;
+	// justify-content: center;
+	// background-color: bisque;
+	// // background-color: inherit;
+
+	// // mobile
+	// @media (width < $threshold-width) {
+	// }
+
+	// // desktop
+	// @media (width >= $threshold-width) {
+	// }
+}

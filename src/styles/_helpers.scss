@@ -1,0 +1,43 @@
+.hidden {
+	// display: none;
+	display: none !important;
+}
+
+.disabled {
+	pointer-events: none;
+}
+
+.full-space {
+	inline-size: 100%;
+	block-size: 100%;
+}
+
+@mixin flex-block($width: auto, $height: auto, $radius: 0) {
+	border: none;
+	inline-size: $width;
+	block-size: $height;
+	border-radius: $radius;
+
+	display: flex;
+	// flex-direction: row;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+@mixin circle($diameter) {
+	@include flex-block($diameter, $diameter, calc($diameter / 2));
+}
+
+.visually-hidden:not(:focus):not(:active) {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	border: 0;
+	padding: 0;
+	white-space: nowrap;
+	clip-path: inset(100%);
+	clip: rect(0 0 0 0);
+	overflow: hidden;
+}

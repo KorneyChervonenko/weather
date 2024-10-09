@@ -1,0 +1,65 @@
+// @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap');
+
+$mobile-width: 23.44rem;
+// $main-width-mobile: 20.5rem;
+// $main-width-desktop: 37.5rem;
+// $threshold-width: 80rem;
+// $threshold-width-header: 40rem;
+// $threshold-width-search: 54rem;
+// @max-width-desktop: 90rem;
+
+// font-sizes
+:root {
+	// font-family: 'Nunito Sans', sans-serif;
+	// font-optical-sizing: auto;
+	--fs-150: 9.375rem; // 150px
+	--fs-100: 6.25rem; // 100px
+	--fs-80: 5rem; // 80px
+	--fs-56: 3.5rem; // 56px
+	--fs-40: 2.5rem; // 40px
+	--fs-38: 2.38rem; // 38px
+	--fs-32: 2rem; // 32px
+	--fs-30: 1.875rem; // 30px
+	--fs-28: 1.75rem; // 28px
+	--fs-26: 1.625rem; // 26px
+	--fs-24: 1.5rem; // 24px
+	--fs-22: 1.38rem; // 22px
+	--fs-20: 1.25rem; // 20px
+	--fs-18: 1.125rem; // 18px
+	--fs-16: 1rem; // 16px
+	--fs-15: 0.9375rem; // 15px
+	--fs-14: 0.875rem; // 14px
+	--fs-13: 0.8125rem; // 13px
+	--fs-12: 0.75rem; // 12px
+	--fs-10: 0.625rem; // 10px
+}
+
+// // colors
+// :root {
+// 	--Dark-Blue: hsl(209, 23%, 22%); //Dark Mode Elements
+// 	--Very-Dark-Blue1: hsl(207, 26%, 17%); //Dark Mode Background
+// 	--Very-Dark-Blue2: hsl(200, 15%, 8%); //Light Mode Text
+// 	--Dark-Gray: hsl(0, 0%, 52%); // Light Mode Input
+// 	--Very-Light-Gray: hsl(0, 0%, 98%); // Light Mode Background
+// 	--White: hsl(0, 0%, 100%); // Dark Mode Text & Light Mode Elements
+// }
+
+// // Dark Mode
+// :root:has(#theme-switch:checked) {
+// 	--text-color: var(--White);
+// 	--main-bg-color: var(--Very-Dark-Blue1);
+// 	--element-bg-color: var(--Dark-Blue);
+// }
+
+// // Light Mode
+// :root:has(#theme-switch:not(:checked)) {
+// 	--text-color: var(--Very-Dark-Blue2);
+// 	--main-bg-color: var(--Very-Light-Gray);
+// 	--element-bg-color: var(--White);
+// }
+
+// // paddings
+// :root {
+// 	--padding-inline-mobile: 1.75rem;
+// 	--padding-inline-desktop: 5rem;
+// }
