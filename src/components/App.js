@@ -1,7 +1,18 @@
 import { useEffect } from 'react';
 import { useGeolocation } from './useGeolocation';
+import DaysList from './DaysList.jsx';
 
 import './App.scss';
+
+const days = [
+	{ name: 'Sunday', wmoCode: 1 },
+	{ name: 'Monday', wmoCode: 0 },
+	{ name: 'Tuesday', wmoCode: 95 },
+	{ name: 'Wednesday', wmoCode: 2 },
+	{ name: 'Thursday', wmoCode: 55 },
+	{ name: 'Friday', wmoCode: 99 },
+	{ name: 'Saturday', wmoCode: 3 },
+];
 
 export default function App() {
 	const {
@@ -18,7 +29,8 @@ export default function App() {
 	// }, []);
 
 	return (
-		<div className="App">
+		<main className="App">
+			<DaysList days={days} />
 			{/* <button onClick={getPosition} disabled={isLoading}>
 				Get my position
 			</button>
@@ -35,6 +47,6 @@ export default function App() {
 					</a>
 				</p>
 			)} */}
-		</div>
+		</main>
 	);
 }

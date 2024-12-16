@@ -1,0 +1,9 @@
+@import '../styles/_reset.scss';
+@import '../styles/_helpers.scss';
+@import '../styles/_vars.scss';
+
+.days-list {
+	display: flex;
+	flex-direction: row;
+	column-gap: 1rem;
+}
