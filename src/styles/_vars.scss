@@ -3,7 +3,8 @@
 $mobile-width: 23.44rem;
 // $main-width-mobile: 20.5rem;
 // $main-width-desktop: 37.5rem;
-// $threshold-width: 80rem;
+$threshold-width: 30rem;
+$threshold-width: $mobile-width;
 // $threshold-width-header: 40rem;
 // $threshold-width-search: 54rem;
 // @max-width-desktop: 90rem;

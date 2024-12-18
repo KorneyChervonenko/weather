@@ -3,7 +3,30 @@
 @import '../styles/_vars.scss';
 
 .days-list {
+	// background-color: beige;
+
 	display: flex;
 	flex-direction: row;
-	column-gap: 1rem;
+	justify-content: center;
+	flex-wrap: wrap;
+	column-gap: 0.5rem;
+	row-gap: 0.5rem;
+
+	// writing-mode: vertical-rl;
+	// writing-mode: vertical-lr;
+
+	// writing-mode: sideways-lr;
+
+	// vertical
+	@media (width < $threshold-width) {
+		inline-size: 44rem;
+		writing-mode: sideways-lr;
+	}
+
+	// desktop
+	@media (width >= $threshold-width) {
+		writing-mode: horizontal-tb;
+		// justify-content: center;
+		// flex-wrap: wrap;
+	}
 }

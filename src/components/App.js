@@ -3,18 +3,30 @@ import { useGeolocation } from './useGeolocation';
 import DaysList from './DaysList.jsx';
 
 import './App.scss';
+// 'uk-UA'
+const date = new Date().toLocaleDateString(navigator.languages, {
+	day: '2-digit',
+	month: 'long',
+	year: 'numeric',
+});
+
+// const date = new Intl.DateTimeFormat(navigator.languages).format(new Date());
 
 const days = [
-	{ name: 'Sunday', wmoCode: 1 },
-	{ name: 'Monday', wmoCode: 0 },
-	{ name: 'Tuesday', wmoCode: 95 },
-	{ name: 'Wednesday', wmoCode: 2 },
-	{ name: 'Thursday', wmoCode: 55 },
-	{ name: 'Friday', wmoCode: 99 },
-	{ name: 'Saturday', wmoCode: 3 },
+	{ name: 'Sunday', wmoCode: 1, tmin: -40, tmax: 40, date },
+	{ name: 'Monday', wmoCode: 0, tmin: -4, tmax: 4, date },
+	{ name: 'Tuesday', wmoCode: 95, tmin: 0, tmax: 5, date },
+	{ name: 'Wednesday', wmoCode: 2, tmin: -1, tmax: 1, date },
+	{ name: 'Thursday', wmoCode: 55, tmin: 40, tmax: 47, date },
+	{ name: 'Friday', wmoCode: 99, tmin: 0, tmax: 1, date },
+	{ name: 'Saturday', wmoCode: 3, tmin: -40, tmax: -15, date },
 ];
 
 export default function App() {
+	console.clear();
+	// console.log(date);
+	// console.log(navigator.languages);
+
 	const {
 		isLoading,
 		position: { lat, lng },

@@ -6,18 +6,50 @@
 	background-color: coral;
 	// inline-size: 5rem;
 	// inline-size: calc(80vw / 7);
-	inline-size: 11cqi;
+	// inline-size: 11cqi;
 	// block-size: 10rem;
-	aspect-ratio: 0.8;
+	// aspect-ratio: 0.8;
+	padding: 1rem;
+	border-radius: 0.5rem;
+
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	justify-content: space-evenly;
 
-	font-size: 1.5cqi;
+	// font-size: 1.5cqi;
+	// inline-size: 11cqi;
+	// inline-size: 12rem;
+	// min-inline-size: 8rem;
+
+	// vertical
+	@media (width < $threshold-width) {
+		// inline-size: 10rem;
+		block-size: 10rem;
+	}
+
+	// desktop
+	@media (width >= $threshold-width) {
+		inline-size: 12rem;
+	}
+
+	> .day-name {
+		// font-size: 1.5cqi;
+		font-size: 1.5rem;
+	}
+
+	> .date {
+		// font-size: 1cqi;
+		font-size: 1rem;
+	}
 
 	> .weather-icon {
-		// background-color: aquamarine;
-		// inline-size: 2cqi;
-		font-size: 3cqi;
+		// font-size: 3cqi;
+		font-size: 3rem;
+	}
+
+	> .temperature {
+		// font-size: 2cqi;
+		font-size: 2rem;
 	}
 }
