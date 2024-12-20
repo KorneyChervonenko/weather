@@ -1,4 +1,5 @@
 export default function CountrySelector({ countries, countryName, setCountryName, setCityName }) {
+	if (countries.length === 0) return;
 	return (
 		<form>
 			<h3 className="visually-hidden">Country Selector</h3>
@@ -13,7 +14,6 @@ export default function CountrySelector({ countries, countryName, setCountryName
 				}}
 			>
 				{countries.map((country) => {
-					if (country.capital.length === 0) return;
 					return (
 						<option value={country.name} key={country.id}>
 							{country.name}

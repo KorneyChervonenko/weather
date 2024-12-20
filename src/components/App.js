@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useReducer } from 'react';
 import { useGeolocation } from './useGeolocation';
 import DaysList from './DaysList.jsx';
 import CountrySelector from './CountrySelector.jsx';
@@ -25,20 +25,28 @@ const days = [
 	{ name: 'Saturday', wmoCode: 3, tmin: -40, tmax: -15, date },
 ];
 
+// const initialState = {
+// 	countries: [],
+// 	countryName: null,
+// 	cityName: null,
+// };
+
 export default function App() {
-	console.clear();
+	// console.clear();
 	// console.log(date);
-	console.log(navigator.languages);
+	// console.log(navigator.languages);
 
 	// const [isLoading, setIsLoading] = useState(false);
+
+	// const [{ countries, status, questionIndex, answer, points }, dispatch] = useReducer(
+	// 	reducer,
+	// 	initialState
+	// );
 	const [countries, setCountries] = useState([]);
 	const [countryName, setCountryName] = useState(null);
 	const [cityName, setCityName] = useState(null);
 
-	// TODO сделать смену текущего 1-го города как useEffect при смене текущей страны
-
 	useEffect(function () {
-		console.clear();
 		async function fetchCountries() {
 			try {
 				// setIsLoading(true);
@@ -47,9 +55,23 @@ export default function App() {
 				// const response = await fetch('../data/countries.json');
 				// console.log(response);
 				if (!response.ok) throw new Error('Something went wrong with fetching data');
-				const newCountries = (await response.json()).filter(
-					(country) => country.capital.length !== 0
-				);
+
+				// remove countries without capital and add capital to cities if it isn't there
+				const newCountries = (await response.json())
+					.filter((country) => country.capital.length !== 0)
+					.map((country) => {
+						if (country.cities.includes(country.capital)) return country;
+						else {
+							const newCity = {
+								id: crypto.randomUUID(),
+								name: country.capital,
+								latitude: country.latitude,
+								longitude: country.longitude,
+							};
+							return { ...country, cities: [...country.cities, newCity] };
+						}
+					});
+
 				// console.log(data);
 				// setCountries(data.slice(0, 8))
 				// ;

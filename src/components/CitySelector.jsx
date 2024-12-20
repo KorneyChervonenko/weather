@@ -1,5 +1,6 @@
 export default function CitySelector({ country, cityName, setCityName }) {
 	if (country === undefined) return;
+
 	// if (countryName === null) return;
 	// const country = countries.find((c) => c.name === countryName);
 	return (
