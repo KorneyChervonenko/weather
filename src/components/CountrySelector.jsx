@@ -1,4 +1,4 @@
-export default function CountrySelector({ countries, countryName, setCountryName, setCityName }) {
+export default function CountrySelector({ countries, countryName, dispatch }) {
 	if (countries.length === 0) return;
 	return (
 		<form>
@@ -7,10 +7,12 @@ export default function CountrySelector({ countries, countryName, setCountryName
 				className="country-selector"
 				value={countryName}
 				onChange={(e) => {
-					const countryName = e.target.value;
-					setCountryName(countryName);
-					const country = countries.find((c) => c.name === countryName);
-					setCityName(country.capital);
+					// const countryName = e.target.value;
+					dispatch({ type: 'set_country_name', payload: { countryName: e.target.value } });
+					// setCountryName(countryName);
+					// const country = countries.find((c) => c.name === countryName);
+					// dispatch({ type: 'set_city_name', payload: { cityName: country.capital } });
+					// setCityName(country.capital);
 				}}
 			>
 				{countries.map((country) => {

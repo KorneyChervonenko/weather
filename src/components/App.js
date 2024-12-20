@@ -25,11 +25,39 @@ const days = [
 	{ name: 'Saturday', wmoCode: 3, tmin: -40, tmax: -15, date },
 ];
 
-// const initialState = {
-// 	countries: [],
-// 	countryName: null,
-// 	cityName: null,
-// };
+const initialState = {
+	countries: [],
+	countryName: null,
+	cityName: null,
+};
+
+function reducer(state, action) {
+	switch (action.type) {
+		case 'set_countries':
+			const countries = action.payload.countries; // structuredClone() ???
+			// const initCountry = countries.at(0);
+			// const countryName = initCountry.name;
+			// const cityName = initCountry.capital;
+			return {
+				...state,
+				countries,
+				countryName: countries.at(0).name,
+				cityName: countries.at(0).capital,
+			};
+		// return { ...state, countries, countryName, cityName };
+
+		case 'set_country_name':
+			const country = state.countries.find((c) => c.name === action.payload.countryName);
+			return { ...state, countryName: country.name, cityName: country.capital };
+		// return { ...state, countryName: action.payload.countryName };
+
+		case 'set_city_name':
+			return { ...state, cityName: action.payload.cityName };
+
+		default:
+			throw new Error('Unknown action type');
+	}
+}
 
 export default function App() {
 	// console.clear();
@@ -38,13 +66,11 @@ export default function App() {
 
 	// const [isLoading, setIsLoading] = useState(false);
 
-	// const [{ countries, status, questionIndex, answer, points }, dispatch] = useReducer(
-	// 	reducer,
-	// 	initialState
-	// );
-	const [countries, setCountries] = useState([]);
-	const [countryName, setCountryName] = useState(null);
-	const [cityName, setCityName] = useState(null);
+	const [{ countries, countryName, cityName }, dispatch] = useReducer(reducer, initialState);
+
+	// const [countries, setCountries] = useState([]);
+	// const [countryName, setCountryName] = useState(null);
+	// const [cityName, setCityName] = useState(null);
 
 	useEffect(function () {
 		async function fetchCountries() {
@@ -75,17 +101,16 @@ export default function App() {
 				// console.log(data);
 				// setCountries(data.slice(0, 8))
 				// ;
-				const initCountry = newCountries.at(0);
-				const initCityName = initCountry.capital;
-				console.log(initCityName);
+				// const initCountry = newCountries.at(0);
+				// const initCityName = initCountry.capital;
+				// console.log(initCityName);
 
-				setCountries(newCountries);
-				setCountryName(initCountry.name);
-				setCityName(initCityName);
+				// setCountries(newCountries);
+				dispatch({ type: 'set_countries', payload: { countries: newCountries } });
+				// setCountryName(initCountry.name);
+				// setCityName(initCityName);
 				// setCountryName(newCountries.at(0).name);
 				// setCurrentCityName(newCountries.at(0).cities.at(0).name);
-				// const regions = new Set(data.map((country) => country.region));
-				// console.log(regions);
 
 				// console.log(countries);
 			} catch (error) {
@@ -116,14 +141,16 @@ export default function App() {
 			<CountrySelector
 				countries={countries}
 				countryName={countryName}
-				setCountryName={setCountryName}
-				setCityName={setCityName}
+				dispatch={dispatch}
+				// setCountryName={setCountryName}
+				// setCityName={setCityName}
 			/>
 
 			<CitySelector
-				country={countries?.find((c) => c.name === countryName)}
+				country={countries.find((c) => c.name === countryName)}
 				cityName={cityName}
-				setCityName={setCityName}
+				// setCityName={setCityName}
+				dispatch={dispatch}
 				key={countryName}
 			/>
 			{/* <DaysList days={days} /> */}

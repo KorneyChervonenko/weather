@@ -1,15 +1,13 @@
-export default function CitySelector({ country, cityName, setCityName }) {
+export default function CitySelector({ country, cityName, dispatch }) {
 	if (country === undefined) return;
-
-	// if (countryName === null) return;
-	// const country = countries.find((c) => c.name === countryName);
 	return (
 		<form>
 			<h3 className="visually-hidden">City Selector</h3>
 			<select
 				className="city-selector"
 				value={cityName}
-				onChange={(e) => setCityName(e.target.value)}
+				// onChange={(e) => setCityName(e.target.value)}
+				onChange={(e) => dispatch({ type: 'set_city_name', payload: { cityName: e.target.value } })}
 			>
 				{country.cities.map((city) => {
 					return (
