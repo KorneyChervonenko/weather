@@ -3,6 +3,7 @@ import { useGeolocation } from './useGeolocation';
 import DaysList from './DaysList.jsx';
 import CountrySelector from './CountrySelector.jsx';
 import CitySelector from './CitySelector.jsx';
+import getNearestCity from './utils/getNearestCity.mjs';
 // import countriesData from '../data/countries.json'
 
 import './App.scss';
@@ -67,6 +68,7 @@ export default function App() {
 	// const [isLoading, setIsLoading] = useState(false);
 
 	const [{ countries, countryName, cityName }, dispatch] = useReducer(reducer, initialState);
+	const [geolocation, setGeolocation] = useState(undefined);
 
 	//////
 	// https://stackoverflow.com/questions/6797569/get-city-name-using-geolocation
@@ -77,40 +79,73 @@ export default function App() {
 	// const [countries, setCountries] = useState([]);
 	// const [countryName, setCountryName] = useState(null);
 	// const [cityName, setCityName] = useState(null);
-	function getPosition() {
-		if (!navigator.geolocation) return;
-		// setIsLoading(true);
-		navigator.geolocation.getCurrentPosition(
-			(position) => {
-				const { latitude: lat, longitude: lng } = position.coords;
-				// setPosition({
-				// 	lat: pos.coords.latitude,
-				// 	lng: pos.coords.longitude,
-				// });
-				// console.log(position);
-				console.log(lat, lng);
-				const geocoding =
-					'https://maps.googleapis.com/maps/api/geocode/json?latlng=' +
-					lat +
-					'%2C' +
-					lng +
-					'&language=en';
-				fetch(geocoding)
-					.then((response) => response.json())
-					.then((data) => console.log(data));
-				// setIsLoading(false);
-			},
-			(error) => {
-				// setError(error.message);
-				// setIsLoading(false);
-			},
-			{
-				enableHighAccuracy: true,
-				timeout: 5000,
-				maximumAge: 0,
+
+	useEffect(
+		function () {
+			console.clear();
+			if (countries.length === 0 || geolocation === undefined) return;
+			console.log('countries:', countries.length);
+			console.log(geolocation);
+			dispatch({
+				type: 'set_country_name',
+				payload: { countryName: geolocation.nearestCountry.name },
+			});
+			dispatch({ type: 'set_city_name', payload: { cityName: geolocation.nearestCity.name } });
+		},
+		[countries, geolocation]
+	);
+
+	useEffect(
+		function () {
+			function getPosition() {
+				if (countries.length === 0) return;
+				if (!navigator.geolocation) return;
+				// setIsLoading(true);
+				navigator.geolocation.getCurrentPosition(
+					(position) => {
+						const { latitude, longitude } = position.coords;
+						// getNearestCity({ latitude, longitude}, countries);
+						setGeolocation(getNearestCity({ latitude, longitude }, countries));
+					},
+					(error) => {
+						// setError(error.message);
+						// setIsLoading(false);
+					},
+					{
+						enableHighAccuracy: true,
+						timeout: 5000,
+						maximumAge: 0,
+					}
+				);
 			}
-		);
-	}
+			console.clear();
+			getPosition();
+			// console.log(lat, lng);
+		},
+		[countries]
+	);
+
+	// function getPosition() {
+	// 	if (!navigator.geolocation) return;
+	// 	// setIsLoading(true);
+	// 	navigator.geolocation.getCurrentPosition(
+	// 		(position) => {
+	// 			const { latitude, longitude} = position.coords;
+	// 			// getNearestCity({ latitude, longitude}, countries);
+	// 			const { nearestCountry, nearestCity } = getNearestCity({ latitude, longitude}, countries);
+
+	// 		},
+	// 		(error) => {
+	// 			// setError(error.message);
+	// 			// setIsLoading(false);
+	// 		},
+	// 		{
+	// 			enableHighAccuracy: true,
+	// 			timeout: 5000,
+	// 			maximumAge: 0,
+	// 		}
+	// 	);
+	// }
 
 	useEffect(function () {
 		async function fetchCountries() {
@@ -147,7 +182,7 @@ export default function App() {
 
 				// setCountries(newCountries);
 				dispatch({ type: 'set_countries', payload: { countries: newCountries } });
-				getPosition();
+				// getPosition();
 				// setCountryName(initCountry.name);
 				// setCityName(initCityName);
 				// setCountryName(newCountries.at(0).name);
@@ -180,7 +215,7 @@ export default function App() {
 
 	return (
 		<main className="App">
-			{/* <CountrySelector
+			<CountrySelector
 				countries={countries}
 				countryName={countryName}
 				dispatch={dispatch}
@@ -194,7 +229,7 @@ export default function App() {
 				// setCityName={setCityName}
 				dispatch={dispatch}
 				key={countryName}
-			/> */}
+			/>
 
 			{/* <DaysList days={days} /> */}
 

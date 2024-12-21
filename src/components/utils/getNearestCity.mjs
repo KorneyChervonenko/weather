@@ -19,7 +19,8 @@ function getNearestCity(position, countries) {
 		});
 	});
 	// console.log(nearestCountry.name, nearestCity.name, shortestDistance);
-	return { country: nearestCountry, city: nearestCity };
+	// return { country: nearestCountry, city: nearestCity };
+	return { nearestCountry, nearestCity };
 }
 
 export default getNearestCity;
