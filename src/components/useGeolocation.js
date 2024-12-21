@@ -14,6 +14,7 @@ export function useGeolocation() {
 					lat: pos.coords.latitude,
 					lng: pos.coords.longitude,
 				});
+				console.log(position);
 				setIsLoading(false);
 			},
 			(error) => {

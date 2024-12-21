@@ -68,9 +68,49 @@ export default function App() {
 
 	const [{ countries, countryName, cityName }, dispatch] = useReducer(reducer, initialState);
 
+	//////
+	// https://stackoverflow.com/questions/6797569/get-city-name-using-geolocation
+	//
+
+	// const [IPAddressInfo, setIPAddressInfo] = useState(undefined);
+
 	// const [countries, setCountries] = useState([]);
 	// const [countryName, setCountryName] = useState(null);
 	// const [cityName, setCityName] = useState(null);
+	function getPosition() {
+		if (!navigator.geolocation) return;
+		// setIsLoading(true);
+		navigator.geolocation.getCurrentPosition(
+			(position) => {
+				const { latitude: lat, longitude: lng } = position.coords;
+				// setPosition({
+				// 	lat: pos.coords.latitude,
+				// 	lng: pos.coords.longitude,
+				// });
+				// console.log(position);
+				console.log(lat, lng);
+				const geocoding =
+					'https://maps.googleapis.com/maps/api/geocode/json?latlng=' +
+					lat +
+					'%2C' +
+					lng +
+					'&language=en';
+				fetch(geocoding)
+					.then((response) => response.json())
+					.then((data) => console.log(data));
+				// setIsLoading(false);
+			},
+			(error) => {
+				// setError(error.message);
+				// setIsLoading(false);
+			},
+			{
+				enableHighAccuracy: true,
+				timeout: 5000,
+				maximumAge: 0,
+			}
+		);
+	}
 
 	useEffect(function () {
 		async function fetchCountries() {
@@ -107,6 +147,7 @@ export default function App() {
 
 				// setCountries(newCountries);
 				dispatch({ type: 'set_countries', payload: { countries: newCountries } });
+				getPosition();
 				// setCountryName(initCountry.name);
 				// setCityName(initCityName);
 				// setCountryName(newCountries.at(0).name);
@@ -123,22 +164,23 @@ export default function App() {
 		fetchCountries();
 	}, []);
 
-	const {
-		isLoading,
-		position: { lat, lng },
-		error,
-		getPosition,
-	} = useGeolocation();
-	// console.log(lat, lng);
+	// const {
+	// 	isLoading,
+	// 	position: { lat, lng },
+	// 	error,
+	// 	getPosition,
+	// } = useGeolocation();
+	// // console.log(lat, lng);
 
 	// useEffect(function () {
 	// 	console.clear();
 	// 	getPosition();
+	// 	// console.log(lat, lng);
 	// }, []);
 
 	return (
 		<main className="App">
-			<CountrySelector
+			{/* <CountrySelector
 				countries={countries}
 				countryName={countryName}
 				dispatch={dispatch}
@@ -152,8 +194,10 @@ export default function App() {
 				// setCityName={setCityName}
 				dispatch={dispatch}
 				key={countryName}
-			/>
+			/> */}
+
 			{/* <DaysList days={days} /> */}
+
 			{/* <button onClick={getPosition} disabled={isLoading}>
 				Get my position
 			</button>
