@@ -1,11 +1,12 @@
 // todo translate countries name
 
 import { useEffect, useState, useReducer } from 'react';
-import { useGeolocation } from './useGeolocation';
+// import { useGeolocation } from './useGeolocation';
 import DaysList from './DaysList.jsx';
 import CountrySelector from './CountrySelector.jsx';
 import CitySelector from './CitySelector.jsx';
 import getNearestCity from './utils/getNearestCity.mjs';
+import CircularProgress from '@mui/material/CircularProgress';
 // import countriesData from '../data/countries.json'
 
 import './App.scss';
@@ -28,10 +29,15 @@ const days = [
 	{ name: 'Saturday', wmoCode: 3, tmin: -40, tmax: -15, date },
 ];
 
-const initialState = {
+const initialData = {
 	countries: [],
 	countryName: null,
 	cityName: null,
+};
+
+const initialStatus = {
+	isCountriesListLoading: true,
+	isDetecting: true,
 };
 
 function reducer(state, action) {
@@ -67,28 +73,22 @@ export default function App() {
 	// console.log(date);
 	// console.log(navigator.languages);
 
-	// const [isLoading, setIsLoading] = useState(false);
+	// const [isCountriesListLoading, setisCountriesListLoading] = useState(false);
 
-	const [{ countries, countryName, cityName }, dispatch] = useReducer(reducer, initialState);
-	const [geolocation, setGeolocation] = useState(undefined);
+	const [{ countries, countryName, cityName }, dispatch] = useReducer(reducer, initialData);
+	const [geolocation, setGeolocation] = useState(null);
+	const [{ isCountriesListLoading, isDetecting }, setStatus] = useState(initialStatus);
 
-	//////
-	// https://stackoverflow.com/questions/6797569/get-city-name-using-geolocation
-	//
-
-	// const [IPAddressInfo, setIPAddressInfo] = useState(undefined);
-
-	// const [countries, setCountries] = useState([]);
-	// const [countryName, setCountryName] = useState(null);
-	// const [cityName, setCityName] = useState(null);
+	const inProcess = isCountriesListLoading || isDetecting;
+	// useEffect(function () {}, []);
 
 	// select geolocated country + city in selector as start
 	useEffect(
 		function () {
 			// console.clear();
-			if (countries.length === 0 || geolocation === undefined) return;
-			console.log('countries:', countries.length);
-			console.log(geolocation);
+			if (countries.length === 0 || geolocation === undefined || geolocation === null) return;
+			// console.log('countries:', countries.length);
+			// console.log(geolocation);
 			dispatch({
 				type: 'set_country_name',
 				payload: { countryName: geolocation.nearestCountry.name },
@@ -103,17 +103,24 @@ export default function App() {
 		function () {
 			function getPosition() {
 				if (countries.length === 0) return;
-				if (!navigator.geolocation) return;
-				// setIsLoading(true);
+				if (!navigator.geolocation) {
+					setGeolocation(undefined);
+					return;
+				}
+				// setisCountriesListLoading(true);
+				setStatus((currStatus) => ({ ...currStatus, isDetecting: true }));
 				navigator.geolocation.getCurrentPosition(
 					(position) => {
 						const { latitude, longitude } = position.coords;
 						// getNearestCity({ latitude, longitude}, countries);
-						setGeolocation(getNearestCity({ latitude, longitude }, countries));
+						const detectLocation = getNearestCity({ latitude, longitude }, countries);
+						setGeolocation(detectLocation);
+						setStatus((currStatus) => ({ ...currStatus, isDetecting: false }));
 					},
 					(error) => {
 						// setError(error.message);
-						// setIsLoading(false);
+						// setisCountriesListLoading(false);
+						setStatus((currStatus) => ({ ...currStatus, isDetecting: false }));
 					},
 					{
 						enableHighAccuracy: true,
@@ -129,33 +136,12 @@ export default function App() {
 		[countries]
 	);
 
-	// function getPosition() {
-	// 	if (!navigator.geolocation) return;
-	// 	// setIsLoading(true);
-	// 	navigator.geolocation.getCurrentPosition(
-	// 		(position) => {
-	// 			const { latitude, longitude} = position.coords;
-	// 			// getNearestCity({ latitude, longitude}, countries);
-	// 			const { nearestCountry, nearestCity } = getNearestCity({ latitude, longitude}, countries);
-
-	// 		},
-	// 		(error) => {
-	// 			// setError(error.message);
-	// 			// setIsLoading(false);
-	// 		},
-	// 		{
-	// 			enableHighAccuracy: true,
-	// 			timeout: 5000,
-	// 			maximumAge: 0,
-	// 		}
-	// 	);
-	// }
-
-	// get countries with cities from local file
+	// get countries with cities from local file at app start
 	useEffect(function () {
 		async function fetchCountries() {
 			try {
-				// setIsLoading(true);
+				// setisCountriesListLoading(true);
+				setStatus((currStatus) => ({ ...currStatus, isCountriesListLoading: true }));
 				// let response, data;
 				// const response = await fetch('../data/countries_cities.min.json');
 				const response = await fetch('../data/countries_cities.min.json.gz');
@@ -199,70 +185,49 @@ export default function App() {
 				// 	});
 
 				// console.log(data);
-				// setCountries(data.slice(0, 8))
-				// ;
-				// const initCountry = newCountries.at(0);
-				// const initCityName = initCountry.capital;
-				// console.log(initCityName);
-
-				// setCountries(newCountries);
 				dispatch({ type: 'set_countries', payload: { countries: newCountries } });
-				// getPosition();
-				// setCountryName(initCountry.name);
-				// setCityName(initCityName);
-				// setCountryName(newCountries.at(0).name);
-				// setCurrentCityName(newCountries.at(0).cities.at(0).name);
-
 				// console.log(countries);
 			} catch (error) {
 				console.log(error.message);
 				alert(error.message);
 			} finally {
-				// setIsLoading(false);
+				// setisCountriesListLoading(false);
+				setStatus((currStatus) => ({ ...currStatus, isCountriesListLoading: false }));
 			}
 		}
 		fetchCountries();
 	}, []);
 
-	// const {
-	// 	isLoading,
-	// 	position: { lat, lng },
-	// 	error,
-	// 	getPosition,
-	// } = useGeolocation();
-	// // console.log(lat, lng);
-
-	// useEffect(function () {
-	// 	console.clear();
-	// 	getPosition();
-	// 	// console.log(lat, lng);
-	// }, []);
-
 	return (
 		<main className="App">
-			<CountrySelector
-				countries={countries}
-				countryName={countryName}
-				dispatch={dispatch}
-				// setCountryName={setCountryName}
-				// setCityName={setCityName}
-			/>
+			{inProcess && <CircularProgress style={{ color: 'yellow' }} />}
+			{!inProcess && (
+				<>
+					<CountrySelector
+						countries={countries}
+						countryName={countryName}
+						dispatch={dispatch}
+						// setCountryName={setCountryName}
+						// setCityName={setCityName}
+					/>
 
-			<CitySelector
-				country={countries.find((c) => c.name === countryName)}
-				cityName={cityName}
-				// setCityName={setCityName}
-				dispatch={dispatch}
-				key={countryName}
-			/>
+					<CitySelector
+						country={countries.find((c) => c.name === countryName)}
+						cityName={cityName}
+						// setCityName={setCityName}
+						dispatch={dispatch}
+						key={countryName}
+					/>
+				</>
+			)}
 
 			{/* <DaysList days={days} /> */}
 
-			{/* <button onClick={getPosition} disabled={isLoading}>
+			{/* <button onClick={getPosition} disabled={isCountriesListLoading}>
 				Get my position
 			</button>
 			{error && <p>{error}</p>}
-			{!isLoading && !error && lat && lng && (
+			{!isCountriesListLoading && !error && lat && lng && (
 				<p>
 					Your GPS position:{' '}
 					<a
