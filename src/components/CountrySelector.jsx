@@ -10,9 +10,21 @@ export default function CountrySelector({ countries, countryName, dispatch }) {
 					// const countryName = e.target.value;
 					dispatch({ type: 'set_country_name', payload: { countryName: e.target.value } });
 					// setCountryName(countryName);
-					// const country = countries.find((c) => c.name === countryName);
+					const country = countries.find((c) => c.name === e.target.value);
+					// console.log(country.name);
+
 					// dispatch({ type: 'set_city_name', payload: { cityName: country.capital } });
 					// setCityName(country.capital);
+					dispatch({
+						type: 'set_geolocation',
+						payload: {
+							geolocation: {
+								nearestCountry: country,
+								nearestCity: country.cities.find((city) => city.name === country.capital),
+							},
+							geolocationSource: 'manual',
+						},
+					});
 				}}
 			>
 				{countries.map((country) => {

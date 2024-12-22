@@ -78,7 +78,7 @@ function reducer(state, action) {
 }
 
 export default function App() {
-	console.clear();
+	// console.clear();
 	// console.log(date);
 	// console.log(navigator.languages);
 
@@ -119,7 +119,7 @@ export default function App() {
 		function () {
 			function getPosition() {
 				if (countries.length === 0) return;
-				if (geolocationSource === 'navigator') return;
+				if (geolocationSource === 'navigator' || geolocationSource === 'manual') return;
 				if (!navigator.geolocation) {
 					// setGeolocation(undefined);
 					dispatch({
