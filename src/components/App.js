@@ -1,3 +1,5 @@
+// todo translate countries name
+
 import { useEffect, useState, useReducer } from 'react';
 import { useGeolocation } from './useGeolocation';
 import DaysList from './DaysList.jsx';
@@ -61,7 +63,7 @@ function reducer(state, action) {
 }
 
 export default function App() {
-	// console.clear();
+	console.clear();
 	// console.log(date);
 	// console.log(navigator.languages);
 
@@ -80,9 +82,10 @@ export default function App() {
 	// const [countryName, setCountryName] = useState(null);
 	// const [cityName, setCityName] = useState(null);
 
+	// select geolocated country + city in selector as start
 	useEffect(
 		function () {
-			console.clear();
+			// console.clear();
 			if (countries.length === 0 || geolocation === undefined) return;
 			console.log('countries:', countries.length);
 			console.log(geolocation);
@@ -95,6 +98,7 @@ export default function App() {
 		[countries, geolocation]
 	);
 
+	// get geolocation with navigator.geolocation and find nearest city
 	useEffect(
 		function () {
 			function getPosition() {
@@ -118,7 +122,7 @@ export default function App() {
 					}
 				);
 			}
-			console.clear();
+			// console.clear();
 			getPosition();
 			// console.log(lat, lng);
 		},
@@ -147,18 +151,25 @@ export default function App() {
 	// 	);
 	// }
 
+	// get countries with cities from local file
 	useEffect(function () {
 		async function fetchCountries() {
 			try {
 				// setIsLoading(true);
 				// let response, data;
-				const response = await fetch('../data/countries_cities.min.json'); //
+				// const response = await fetch('../data/countries_cities.min.json');
+				const response = await fetch('../data/countries_cities.min.json.gz');
+
+				const ds = new DecompressionStream('gzip');
+				const decompressed_stream = response.body.pipeThrough(ds);
+				const decompressed_json = await new Response(decompressed_stream).json();
+
 				// const response = await fetch('../data/countries.json');
 				// console.log(response);
 				if (!response.ok) throw new Error('Something went wrong with fetching data');
 
 				// remove countries without capital and add capital to cities if it isn't there
-				const newCountries = (await response.json())
+				const newCountries = decompressed_json
 					.filter((country) => country.capital.length !== 0)
 					.map((country) => {
 						if (country.cities.includes(country.capital)) return country;
@@ -172,6 +183,20 @@ export default function App() {
 							return { ...country, cities: [...country.cities, newCity] };
 						}
 					});
+				// const newCountries = (await response.json())
+				// 	.filter((country) => country.capital.length !== 0)
+				// 	.map((country) => {
+				// 		if (country.cities.includes(country.capital)) return country;
+				// 		else {
+				// 			const newCity = {
+				// 				id: crypto.randomUUID(),
+				// 				name: country.capital,
+				// 				latitude: country.latitude,
+				// 				longitude: country.longitude,
+				// 			};
+				// 			return { ...country, cities: [...country.cities, newCity] };
+				// 		}
+				// 	});
 
 				// console.log(data);
 				// setCountries(data.slice(0, 8))
