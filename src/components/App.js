@@ -34,43 +34,21 @@ const initialData = {
 	countryName: null,
 	cityName: null,
 	geolocation: null,
-	geolocationSource: null,
-};
-
-const initialStatus = {
-	isCountriesListLoading: true,
-	isDetecting: true,
 };
 
 function reducer(state, action) {
 	switch (action.type) {
 		case 'set_countries':
-			const countries = action.payload.countries; // structuredClone() ???
-			// const initCountry = countries.at(0);
-			// const countryName = initCountry.name;
-			// const cityName = initCountry.capital;
-			return {
-				...state,
-				countries,
-				countryName: countries.at(0).name,
-				cityName: countries.at(0).capital,
-			};
-		// return { ...state, countries, countryName, cityName };
+			return { ...state, countries: action.payload.countries };
 
 		case 'set_country_name':
-			const country = state.countries.find((c) => c.name === action.payload.countryName);
-			return { ...state, countryName: country.name, cityName: country.capital };
-		// return { ...state, countryName: action.payload.countryName };
+			return { ...state, countryName: action.payload.countryName };
 
 		case 'set_city_name':
 			return { ...state, cityName: action.payload.cityName };
 
 		case 'set_geolocation':
-			return {
-				...state,
-				geolocation: action.payload.geolocation,
-				geolocationSource: action.payload.geolocationSource,
-			};
+			return { ...state, geolocation: action.payload.geolocation };
 
 		default:
 			throw new Error('Unknown action type');
@@ -84,94 +62,50 @@ export default function App() {
 
 	// const [isCountriesListLoading, setisCountriesListLoading] = useState(false);
 
-	const [{ countries, countryName, cityName, geolocation, geolocationSource }, dispatch] =
-		useReducer(reducer, initialData);
+	const [{ countries, countryName, cityName, geolocation }, dispatch] = useReducer(
+		reducer,
+		initialData
+	);
 	// const [geolocation, setGeolocation] = useState(null);
-	const [{ isCountriesListLoading, isDetecting }, setStatus] = useState(initialStatus);
+	const initStatus = { isCountriesListLoading: true, isGeoLocationDetecting: true };
+	const [{ isCountriesListLoading, isGeoLocationDetecting }, setStatus] = useState(initStatus);
 
-	const inProcess = isCountriesListLoading || isDetecting;
 	// useEffect(function () {}, []);
 
-	// select geolocated country + city in selector as start values
-	useEffect(
-		function () {
-			// console.clear();
-			if (
-				countries.length === 0 ||
-				geolocation === undefined ||
-				geolocation === null ||
-				geolocationSource === 'default'
-			)
-				return;
-			// console.log('countries:', countries.length);
-			// console.log(geolocation);
-			dispatch({
-				type: 'set_country_name',
-				payload: { countryName: geolocation.nearestCountry.name },
-			});
-			dispatch({ type: 'set_city_name', payload: { cityName: geolocation.nearestCity.name } });
-		},
-		[countries, geolocation, geolocationSource]
-	);
-
-	// get geolocation with navigator.geolocation and find nearest city
-	useEffect(
-		function () {
-			function getPosition() {
-				if (countries.length === 0) return;
-				if (geolocationSource === 'navigator' || geolocationSource === 'manual') return;
-				if (!navigator.geolocation) {
-					// setGeolocation(undefined);
-					dispatch({
-						type: 'set_geolocation',
-						payload: { geolocation: undefined, geolocationSource: 'navigator' },
-					});
-					return;
-				}
-				// setisCountriesListLoading(true);
-				setStatus((currStatus) => ({ ...currStatus, isDetecting: true }));
-				navigator.geolocation.getCurrentPosition(
-					(position) => {
-						const { latitude, longitude } = position.coords;
-						// getNearestCity({ latitude, longitude}, countries);
-						const detectedLocation = getNearestCity({ latitude, longitude }, countries);
-						// setGeolocation(detectedLocation);
-						dispatch({
-							type: 'set_geolocation',
-							payload: { geolocation: detectedLocation, geolocationSource: 'navigator' },
-						});
-
-						setStatus((currStatus) => ({ ...currStatus, isDetecting: false }));
-					},
-					(error) => {
-						// setError(error.message);
-						// setisCountriesListLoading(false);
-						setStatus((currStatus) => ({ ...currStatus, isDetecting: false }));
-					},
-					{
-						enableHighAccuracy: true,
-						timeout: 5000,
-						maximumAge: 0,
-					}
-				);
-			}
-			// console.clear();
-			getPosition();
-			// console.log(lat, lng);
-		},
-		[countries, geolocationSource]
-	);
+	// // select geolocated country + city in selector as start values
+	// useEffect(
+	// 	function () {
+	// 		// console.clear();
+	// 		if (
+	// 			countries.length === 0 ||
+	// 			geolocation === undefined ||
+	// 			geolocation === null ||
+	// 			geolocationSource === 'default'
+	// 		)
+	// 			return;
+	// 		// console.log('countries:', countries.length);
+	// 		// console.log(geolocation);
+	// 		dispatch({
+	// 			type: 'set_country_name',
+	// 			payload: { countryName: geolocation.nearestCountry.name },
+	// 		});
+	// 		dispatch({ type: 'set_city_name', payload: { cityName: geolocation.nearestCity.name } });
+	// 	},
+	// 	[countries, geolocation, geolocationSource]
+	// );
 
 	// get countries with cities from local file at app start
 	useEffect(function () {
+		// let newCountries;
+
 		async function fetchCountries() {
 			try {
 				// setisCountriesListLoading(true);
-				setStatus((currStatus) => ({ ...currStatus, isCountriesListLoading: true }));
+				// setIsLoading(true);
+				// setStatus(currStatus=>currStatus.isCountriesListLoading:true)
 				// let response, data;
 				// const response = await fetch('../data/countries_cities.min.json');
 				const response = await fetch('../data/countries_cities.min.json.gz');
-
 				const ds = new DecompressionStream('gzip');
 				const decompressed_stream = response.body.pipeThrough(ds);
 				const decompressed_json = await new Response(decompressed_stream).json();
@@ -195,74 +129,83 @@ export default function App() {
 							return { ...country, cities: [...country.cities, newCity] };
 						}
 					});
-				// const newCountries = (await response.json())
-				// 	.filter((country) => country.capital.length !== 0)
-				// 	.map((country) => {
-				// 		if (country.cities.includes(country.capital)) return country;
-				// 		else {
-				// 			const newCity = {
-				// 				id: crypto.randomUUID(),
-				// 				name: country.capital,
-				// 				latitude: country.latitude,
-				// 				longitude: country.longitude,
-				// 			};
-				// 			return { ...country, cities: [...country.cities, newCity] };
-				// 		}
-				// 	});
 
-				// console.log(data);
 				dispatch({ type: 'set_countries', payload: { countries: newCountries } });
-				// const defaultCountry = newCountries.at(0);
-				// const defaultCity = defaultCountry.cities.find(
-				// 	(city) => city.name === defaultCountry.capital
-				// );
 
-				/////////////////////////////////////////////
-				if (geolocationSource === null) {
+				if (!navigator.geolocation) {
+					console.log('geolocation is OFF');
+
 					const defaultCountry = newCountries.at(0);
 					const defaultCity = defaultCountry.cities.find(
 						(city) => city.name === defaultCountry.capital
 					);
-					dispatch({
-						type: 'set_geolocation',
-						payload: {
-							geolocation: { nearestCountry: defaultCountry, nearestCity: defaultCity },
-							geolocationSource: 'default',
-						},
-					});
+					const defaultGeoLocation = { nearestCountry: defaultCountry, nearestCity: defaultCity };
+					dispatch({ type: 'set_country_name', payload: { countryName: defaultCountry.name } });
+					dispatch({ type: 'set_city_name', payload: { cityName: defaultCity.name } });
+					dispatch({ type: 'set_geolocation', payload: { geolocation: defaultGeoLocation } });
+					return;
 				}
-				// console.log(countries);
+
+				navigator.geolocation.getCurrentPosition(
+					(position) => {
+						console.log('detect geolocation in progress...');
+
+						const { latitude, longitude } = position.coords;
+						const detectedLocation = getNearestCity({ latitude, longitude }, newCountries);
+						console.log(latitude, longitude);
+						const { nearestCountry, nearestCity } = detectedLocation;
+						console.log(detectedLocation);
+
+						dispatch({ type: 'set_country_name', payload: { countryName: nearestCountry.name } });
+						dispatch({ type: 'set_city_name', payload: { cityName: nearestCity.name } });
+						dispatch({ type: 'set_geolocation', payload: { geolocation: detectedLocation } });
+
+						// setIsLoading(false);
+					},
+					(error) => {
+						// setError(error.message);
+						// setisCountriesListLoading(false);
+						// setIsLoading(false);
+					},
+					{
+						enableHighAccuracy: true,
+						timeout: 5000,
+						maximumAge: 0,
+					}
+				);
 			} catch (error) {
 				console.log(error.message);
 				alert(error.message);
 			} finally {
 				// setisCountriesListLoading(false);
-				setStatus((currStatus) => ({ ...currStatus, isCountriesListLoading: false }));
+				setIsLoading(false);
 			}
 		}
+		// setIsLoading(true);
 		fetchCountries();
+		// setIsLoading(false);
 	}, []);
 
 	return (
 		<main className="App">
-			{inProcess && <CircularProgress style={{ color: 'yellow' }} />}
-			{!inProcess && (
+			{isLoading && <CircularProgress style={{ color: 'yellow' }} />}
+			{!isLoading && (
 				<>
-					<CountrySelector
+					{/* <CountrySelector
 						countries={countries}
 						countryName={countryName}
 						dispatch={dispatch}
 						// setCountryName={setCountryName}
 						// setCityName={setCityName}
-					/>
+					/> */}
 
-					<CitySelector
+					{/* <CitySelector
 						country={countries.find((c) => c.name === countryName)}
 						cityName={cityName}
 						// setCityName={setCityName}
 						dispatch={dispatch}
 						key={countryName}
-					/>
+					/> */}
 				</>
 			)}
 
