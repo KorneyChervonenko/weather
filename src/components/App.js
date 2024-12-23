@@ -36,6 +36,8 @@ const initialData = {
 	geolocation: null,
 };
 
+const initStatus = { isCountriesListLoading: false, isGeoLocationDetecting: false };
+
 function reducer(state, action) {
 	switch (action.type) {
 		case 'set_countries':
@@ -67,9 +69,8 @@ export default function App() {
 		initialData
 	);
 	// const [geolocation, setGeolocation] = useState(null);
-	const initStatus = { isCountriesListLoading: true, isGeoLocationDetecting: true };
 	const [{ isCountriesListLoading, isGeoLocationDetecting }, setStatus] = useState(initStatus);
-
+	const inProcess = isCountriesListLoading || isGeoLocationDetecting;
 	// useEffect(function () {}, []);
 
 	// // select geolocated country + city in selector as start values
@@ -103,6 +104,7 @@ export default function App() {
 				// setisCountriesListLoading(true);
 				// setIsLoading(true);
 				// setStatus(currStatus=>currStatus.isCountriesListLoading:true)
+				setStatus((currStatus) => ({ ...currStatus, isCountriesListLoading: true }));
 				// let response, data;
 				// const response = await fetch('../data/countries_cities.min.json');
 				const response = await fetch('../data/countries_cities.min.json.gz');
@@ -146,6 +148,7 @@ export default function App() {
 					return;
 				}
 
+				setStatus((currStatus) => ({ ...currStatus, isGeoLocationDetecting: true }));
 				navigator.geolocation.getCurrentPosition(
 					(position) => {
 						console.log('detect geolocation in progress...');
@@ -161,11 +164,13 @@ export default function App() {
 						dispatch({ type: 'set_geolocation', payload: { geolocation: detectedLocation } });
 
 						// setIsLoading(false);
+						setStatus((currStatus) => ({ ...currStatus, isGeoLocationDetecting: false }));
 					},
 					(error) => {
 						// setError(error.message);
 						// setisCountriesListLoading(false);
 						// setIsLoading(false);
+						setStatus((currStatus) => ({ ...currStatus, isGeoLocationDetecting: false }));
 					},
 					{
 						enableHighAccuracy: true,
@@ -178,7 +183,7 @@ export default function App() {
 				alert(error.message);
 			} finally {
 				// setisCountriesListLoading(false);
-				setIsLoading(false);
+				setStatus((currStatus) => ({ ...currStatus, isCountriesListLoading: false }));
 			}
 		}
 		// setIsLoading(true);
@@ -188,8 +193,8 @@ export default function App() {
 
 	return (
 		<main className="App">
-			{isLoading && <CircularProgress style={{ color: 'yellow' }} />}
-			{!isLoading && (
+			{inProcess && <CircularProgress style={{ color: 'yellow' }} />}
+			{!inProcess && (
 				<>
 					{/* <CountrySelector
 						countries={countries}
