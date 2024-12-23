@@ -73,28 +73,6 @@ export default function App() {
 	const inProcess = isCountriesListLoading || isGeoLocationDetecting;
 	// useEffect(function () {}, []);
 
-	// // select geolocated country + city in selector as start values
-	// useEffect(
-	// 	function () {
-	// 		// console.clear();
-	// 		if (
-	// 			countries.length === 0 ||
-	// 			geolocation === undefined ||
-	// 			geolocation === null ||
-	// 			geolocationSource === 'default'
-	// 		)
-	// 			return;
-	// 		// console.log('countries:', countries.length);
-	// 		// console.log(geolocation);
-	// 		dispatch({
-	// 			type: 'set_country_name',
-	// 			payload: { countryName: geolocation.nearestCountry.name },
-	// 		});
-	// 		dispatch({ type: 'set_city_name', payload: { cityName: geolocation.nearestCity.name } });
-	// 	},
-	// 	[countries, geolocation, geolocationSource]
-	// );
-
 	// get countries with cities from local file at app start
 	useEffect(function () {
 		// let newCountries;
@@ -196,21 +174,21 @@ export default function App() {
 			{inProcess && <CircularProgress style={{ color: 'yellow' }} />}
 			{!inProcess && (
 				<>
-					{/* <CountrySelector
+					<CountrySelector
 						countries={countries}
 						countryName={countryName}
 						dispatch={dispatch}
 						// setCountryName={setCountryName}
 						// setCityName={setCityName}
-					/> */}
+					/>
 
-					{/* <CitySelector
-						country={countries.find((c) => c.name === countryName)}
+					<CitySelector
+						countries={countries}
+						countryName={countryName}
 						cityName={cityName}
-						// setCityName={setCityName}
 						dispatch={dispatch}
 						key={countryName}
-					/> */}
+					/>
 				</>
 			)}
 
