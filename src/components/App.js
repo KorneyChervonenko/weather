@@ -1,4 +1,7 @@
-// todo translate countries name
+// todo
+// translate countries name
+// change background and colors with year seasons
+// light and dark theme fit to browser setup
 
 import { useEffect, useState, useReducer } from 'react';
 // import { useGeolocation } from './useGeolocation';
@@ -11,23 +14,23 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import './App.scss';
 // 'uk-UA'
-const date = new Date().toLocaleDateString(navigator.languages, {
-	day: '2-digit',
-	month: 'long',
-	year: 'numeric',
-});
+// const date = new Date().toLocaleDateString(navigator.languages, {
+// 	day: '2-digit',
+// 	month: 'long',
+// 	year: 'numeric',
+// });
 
 // const date = new Intl.DateTimeFormat(navigator.languages).format(new Date());
 
-const days = [
-	{ name: 'Sunday', wmoCode: 1, tmin: -40, tmax: 40, date },
-	{ name: 'Monday', wmoCode: 0, tmin: -4, tmax: 4, date },
-	{ name: 'Tuesday', wmoCode: 95, tmin: 0, tmax: 5, date },
-	{ name: 'Wednesday', wmoCode: 2, tmin: -1, tmax: 1, date },
-	{ name: 'Thursday', wmoCode: 55, tmin: 40, tmax: 47, date },
-	{ name: 'Friday', wmoCode: 99, tmin: 0, tmax: 1, date },
-	{ name: 'Saturday', wmoCode: 3, tmin: -40, tmax: -15, date },
-];
+// const days = [
+// 	{ name: 'Sunday', wmoCode: 1, tmin: -40, tmax: 40, date },
+// 	{ name: 'Monday', wmoCode: 0, tmin: -4, tmax: 4, date },
+// 	{ name: 'Tuesday', wmoCode: 95, tmin: 0, tmax: 5, date },
+// 	{ name: 'Wednesday', wmoCode: 2, tmin: -1, tmax: 1, date },
+// 	{ name: 'Thursday', wmoCode: 55, tmin: 40, tmax: 47, date },
+// 	{ name: 'Friday', wmoCode: 99, tmin: 0, tmax: 1, date },
+// 	{ name: 'Saturday', wmoCode: 3, tmin: -40, tmax: -15, date },
+// ];
 
 const initialData = {
 	countries: [],
@@ -41,15 +44,21 @@ const initStatus = { isCountriesListLoading: false, isGeoLocationDetecting: fals
 function reducer(state, action) {
 	switch (action.type) {
 		case 'set_countries':
+			// console.log('reducer => set_countries');
 			return { ...state, countries: action.payload.countries };
 
 		case 'set_country_name':
+			// console.log(`reducer => set_country_name: ${action.payload.countryName}`);
 			return { ...state, countryName: action.payload.countryName };
 
 		case 'set_city_name':
+			// console.log(`reducer => set_city_name: ${action.payload.cityName}`);
 			return { ...state, cityName: action.payload.cityName };
 
 		case 'set_geolocation':
+			// const nearestCountryName = action.payload.geolocation.nearestCountry.name;
+			// const nearestCityName = action.payload.geolocation.nearestCity.name;
+			// console.log(`reducer => set_geolocation: ${nearestCountryName} ${nearestCityName}`);
 			return { ...state, geolocation: action.payload.geolocation };
 
 		default:
@@ -58,9 +67,9 @@ function reducer(state, action) {
 }
 
 export default function App() {
-	// console.clear();
+	console.clear();
 	// console.log(date);
-	// console.log(navigator.languages);
+	console.log(navigator.languages);
 
 	// const [isCountriesListLoading, setisCountriesListLoading] = useState(false);
 
@@ -72,13 +81,60 @@ export default function App() {
 	const [{ isCountriesListLoading, isGeoLocationDetecting }, setStatus] = useState(initStatus);
 	const inProcess = isCountriesListLoading || isGeoLocationDetecting;
 	// useEffect(function () {}, []);
+	const [weatherData, setWeatherData] = useState(undefined);
+
+	useEffect(
+		function () {
+			async function getWeather() {
+				// return if geolocation = null
+				if (geolocation === null) {
+					// console.log('geolocation not detected');
+					return;
+				}
+				try {
+					const { latitude, longitude } = geolocation.nearestCity;
+					const weatherURL =
+						'https://api.open-meteo.com/v1/forecast?' +
+						`latitude=${latitude}` +
+						'&' +
+						`longitude=${longitude}` +
+						'&daily=weathercode,temperature_2m_max,temperature_2m_min';
+
+					const weatherRes = await fetch(weatherURL);
+					const weatherData = await weatherRes.json();
+					// console.log(weatherData.daily);
+					setWeatherData(weatherData.daily);
+				} catch (err) {
+					alert(err);
+				} finally {
+				}
+				// console.log(geoData);
+			}
+
+			getWeather();
+		},
+		[geolocation]
+	);
 
 	// get countries with cities from local file at app start
 	useEffect(function () {
 		// let newCountries;
 
 		async function fetchCountries() {
+			function setDefaultLocation(countries) {
+				const defaultCountry = countries.at(0);
+				const defaultCity = defaultCountry.cities.find(
+					(city) => city.name === defaultCountry.capital
+				);
+				const defaultGeoLocation = { nearestCountry: defaultCountry, nearestCity: defaultCity };
+				dispatch({ type: 'set_country_name', payload: { countryName: defaultCountry.name } });
+				dispatch({ type: 'set_city_name', payload: { cityName: defaultCity.name } });
+				dispatch({ type: 'set_geolocation', payload: { geolocation: defaultGeoLocation } });
+			}
+
 			try {
+				// console.log('start loading countries list');
+
 				// setisCountriesListLoading(true);
 				// setIsLoading(true);
 				// setStatus(currStatus=>currStatus.isCountriesListLoading:true)
@@ -113,16 +169,8 @@ export default function App() {
 				dispatch({ type: 'set_countries', payload: { countries: newCountries } });
 
 				if (!navigator.geolocation) {
-					console.log('geolocation is OFF');
-
-					const defaultCountry = newCountries.at(0);
-					const defaultCity = defaultCountry.cities.find(
-						(city) => city.name === defaultCountry.capital
-					);
-					const defaultGeoLocation = { nearestCountry: defaultCountry, nearestCity: defaultCity };
-					dispatch({ type: 'set_country_name', payload: { countryName: defaultCountry.name } });
-					dispatch({ type: 'set_city_name', payload: { cityName: defaultCity.name } });
-					dispatch({ type: 'set_geolocation', payload: { geolocation: defaultGeoLocation } });
+					// console.log('geolocation is OFF');
+					setDefaultLocation(newCountries);
 					return;
 				}
 
@@ -133,9 +181,9 @@ export default function App() {
 
 						const { latitude, longitude } = position.coords;
 						const detectedLocation = getNearestCity({ latitude, longitude }, newCountries);
-						console.log(latitude, longitude);
+						// console.log(latitude, longitude);
 						const { nearestCountry, nearestCity } = detectedLocation;
-						console.log(detectedLocation);
+						// console.log(detectedLocation);
 
 						dispatch({ type: 'set_country_name', payload: { countryName: nearestCountry.name } });
 						dispatch({ type: 'set_city_name', payload: { cityName: nearestCity.name } });
@@ -145,6 +193,8 @@ export default function App() {
 						setStatus((currStatus) => ({ ...currStatus, isGeoLocationDetecting: false }));
 					},
 					(error) => {
+						// console.log(`detecting geolocation error ${error} ${error.code}`);
+						setDefaultLocation(newCountries);
 						// setError(error.message);
 						// setisCountriesListLoading(false);
 						// setIsLoading(false);
@@ -152,16 +202,17 @@ export default function App() {
 					},
 					{
 						enableHighAccuracy: true,
-						timeout: 5000,
+						timeout: 20000,
 						maximumAge: 0,
 					}
 				);
 			} catch (error) {
 				console.log(error.message);
-				alert(error.message);
+				// alert(error.message);
 			} finally {
 				// setisCountriesListLoading(false);
 				setStatus((currStatus) => ({ ...currStatus, isCountriesListLoading: false }));
+				// console.log('finish loading countries list');
 			}
 		}
 		// setIsLoading(true);
@@ -192,6 +243,7 @@ export default function App() {
 				</>
 			)}
 
+			{weatherData && <DaysList weatherData={weatherData} key={cityName} />}
 			{/* <DaysList days={days} /> */}
 
 			{/* <button onClick={getPosition} disabled={isCountriesListLoading}>
