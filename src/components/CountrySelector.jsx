@@ -1,3 +1,5 @@
+import getLocalCountryName from './utils/getLocalCountryName.mjs';
+
 export default function CountrySelector({ countries, countryName, dispatch }) {
 	if (countries.length === 0) return;
 	return (
@@ -27,7 +29,7 @@ export default function CountrySelector({ countries, countryName, dispatch }) {
 				{countries.map((country) => {
 					return (
 						<option value={country.name} key={country.id}>
-							{country.name}
+							{getLocalCountryName(country.translations) || country.name}
 						</option>
 					);
 				})}

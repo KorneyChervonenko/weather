@@ -1,5 +1,4 @@
 // todo
-// translate countries name
 // change background and colors with year seasons
 // light and dark theme fit to browser setup
 
@@ -44,21 +43,15 @@ const initStatus = { isCountriesListLoading: false, isGeoLocationDetecting: fals
 function reducer(state, action) {
 	switch (action.type) {
 		case 'set_countries':
-			// console.log('reducer => set_countries');
 			return { ...state, countries: action.payload.countries };
 
 		case 'set_country_name':
-			// console.log(`reducer => set_country_name: ${action.payload.countryName}`);
 			return { ...state, countryName: action.payload.countryName };
 
 		case 'set_city_name':
-			// console.log(`reducer => set_city_name: ${action.payload.cityName}`);
 			return { ...state, cityName: action.payload.cityName };
 
 		case 'set_geolocation':
-			// const nearestCountryName = action.payload.geolocation.nearestCountry.name;
-			// const nearestCityName = action.payload.geolocation.nearestCity.name;
-			// console.log(`reducer => set_geolocation: ${nearestCountryName} ${nearestCityName}`);
 			return { ...state, geolocation: action.payload.geolocation };
 
 		default:
@@ -69,7 +62,7 @@ function reducer(state, action) {
 export default function App() {
 	console.clear();
 	// console.log(date);
-	console.log(navigator.languages);
+	// console.log(navigator.languages);
 
 	// const [isCountriesListLoading, setisCountriesListLoading] = useState(false);
 
@@ -137,7 +130,6 @@ export default function App() {
 
 				// setisCountriesListLoading(true);
 				// setIsLoading(true);
-				// setStatus(currStatus=>currStatus.isCountriesListLoading:true)
 				setStatus((currStatus) => ({ ...currStatus, isCountriesListLoading: true }));
 				// let response, data;
 				// const response = await fetch('../data/countries_cities.min.json');
@@ -154,6 +146,7 @@ export default function App() {
 				const newCountries = decompressed_json
 					.filter((country) => country.capital.length !== 0)
 					.map((country) => {
+						country.translations['en'] = country.name;
 						if (country.cities.includes(country.capital)) return country;
 						else {
 							const newCity = {
@@ -165,7 +158,6 @@ export default function App() {
 							return { ...country, cities: [...country.cities, newCity] };
 						}
 					});
-
 				dispatch({ type: 'set_countries', payload: { countries: newCountries } });
 
 				if (!navigator.geolocation) {
@@ -175,6 +167,7 @@ export default function App() {
 				}
 
 				setStatus((currStatus) => ({ ...currStatus, isGeoLocationDetecting: true }));
+
 				navigator.geolocation.getCurrentPosition(
 					(position) => {
 						console.log('detect geolocation in progress...');
