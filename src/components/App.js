@@ -1,6 +1,7 @@
 // todo
 // change background and colors with year seasons
 // light and dark theme fit to browser setup
+// add info about wmo codes
 
 import { useEffect, useState, useReducer } from 'react';
 // import { useGeolocation } from './useGeolocation';
@@ -10,28 +11,11 @@ import CitySelector from './CitySelector.jsx';
 import getNearestCity from './utils/getNearestCity.mjs';
 import CircularProgress from '@mui/material/CircularProgress';
 // import countriesData from '../data/countries.json'
+import { LocationContext, LocationDispatchContext } from './LocationContext.mjs';
 
 import './App.scss';
-// 'uk-UA'
-// const date = new Date().toLocaleDateString(navigator.languages, {
-// 	day: '2-digit',
-// 	month: 'long',
-// 	year: 'numeric',
-// });
 
-// const date = new Intl.DateTimeFormat(navigator.languages).format(new Date());
-
-// const days = [
-// 	{ name: 'Sunday', wmoCode: 1, tmin: -40, tmax: 40, date },
-// 	{ name: 'Monday', wmoCode: 0, tmin: -4, tmax: 4, date },
-// 	{ name: 'Tuesday', wmoCode: 95, tmin: 0, tmax: 5, date },
-// 	{ name: 'Wednesday', wmoCode: 2, tmin: -1, tmax: 1, date },
-// 	{ name: 'Thursday', wmoCode: 55, tmin: 40, tmax: 47, date },
-// 	{ name: 'Friday', wmoCode: 99, tmin: 0, tmax: 1, date },
-// 	{ name: 'Saturday', wmoCode: 3, tmin: -40, tmax: -15, date },
-// ];
-
-const initialData = {
+const locationInitData = {
 	countries: [],
 	countryName: null,
 	cityName: null,
@@ -40,7 +24,7 @@ const initialData = {
 
 const initStatus = { isCountriesListLoading: false, isGeoLocationDetecting: false };
 
-function reducer(state, action) {
+function locationReducer(state, action) {
 	switch (action.type) {
 		case 'set_countries':
 			return { ...state, countries: action.payload.countries };
@@ -66,10 +50,9 @@ export default function App() {
 
 	// const [isCountriesListLoading, setisCountriesListLoading] = useState(false);
 
-	const [{ countries, countryName, cityName, geolocation }, dispatch] = useReducer(
-		reducer,
-		initialData
-	);
+	const [locationData, dispatch] = useReducer(locationReducer, locationInitData);
+	const { countries, countryName, cityName, geolocation } = locationData;
+
 	// const [geolocation, setGeolocation] = useState(null);
 	const [{ isCountriesListLoading, isGeoLocationDetecting }, setStatus] = useState(initStatus);
 	const inProcess = isCountriesListLoading || isGeoLocationDetecting;
@@ -218,21 +201,12 @@ export default function App() {
 			{inProcess && <CircularProgress style={{ color: 'yellow' }} />}
 			{!inProcess && (
 				<>
-					<CountrySelector
-						countries={countries}
-						countryName={countryName}
-						dispatch={dispatch}
-						// setCountryName={setCountryName}
-						// setCityName={setCityName}
-					/>
-
-					<CitySelector
-						countries={countries}
-						countryName={countryName}
-						cityName={cityName}
-						dispatch={dispatch}
-						key={countryName}
-					/>
+					<LocationContext.Provider value={locationData}>
+						<LocationDispatchContext.Provider value={dispatch}>
+							<CountrySelector />
+							<CitySelector />
+						</LocationDispatchContext.Provider>
+					</LocationContext.Provider>
 				</>
 			)}
 
@@ -258,3 +232,21 @@ export default function App() {
 		</main>
 	);
 }
+
+// const date = new Date().toLocaleDateString(navigator.languages, {
+// 	day: '2-digit',
+// 	month: 'long',
+// 	year: 'numeric',
+// });
+
+// const date = new Intl.DateTimeFormat(navigator.languages).format(new Date());
+
+// const days = [
+// 	{ name: 'Sunday', wmoCode: 1, tmin: -40, tmax: 40, date },
+// 	{ name: 'Monday', wmoCode: 0, tmin: -4, tmax: 4, date },
+// 	{ name: 'Tuesday', wmoCode: 95, tmin: 0, tmax: 5, date },
+// 	{ name: 'Wednesday', wmoCode: 2, tmin: -1, tmax: 1, date },
+// 	{ name: 'Thursday', wmoCode: 55, tmin: 40, tmax: 47, date },
+// 	{ name: 'Friday', wmoCode: 99, tmin: 0, tmax: 1, date },
+// 	{ name: 'Saturday', wmoCode: 3, tmin: -40, tmax: -15, date },
+// ];
