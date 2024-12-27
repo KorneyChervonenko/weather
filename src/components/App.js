@@ -78,7 +78,7 @@ export default function App() {
 
 					const weatherRes = await fetch(weatherURL);
 					const weatherData = await weatherRes.json();
-					// console.log(weatherData.daily);
+					console.log(weatherData.daily);
 					setWeatherData(weatherData.daily);
 				} catch (err) {
 					alert(err);
