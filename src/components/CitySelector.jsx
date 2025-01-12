@@ -1,10 +1,12 @@
 import { useContext } from 'react';
-import { LocationContext, LocationDispatchContext } from './LocationContext.mjs';
+import { LocationContext } from './LocationContext.mjs';
 
 // export default function CitySelector({ countries, countryName, cityName, dispatch })
 export default function CitySelector() {
-	const locationData = useContext(LocationContext);
-	const dispatch = useContext(LocationDispatchContext);
+	// const locationData = useContext(LocationContext);
+	// const dispatch = useContext(LocationDispatchContext);
+	const { locationData, dispatch } = useContext(LocationContext);
+
 	const { countries, countryName, cityName, geolocation } = locationData;
 
 	if (countries.length === 0 || countryName === null) return;

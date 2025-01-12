@@ -1,11 +1,12 @@
 import { useContext } from 'react';
-import { LocationContext, LocationDispatchContext } from './LocationContext.mjs';
+// import { LocationContext, LocationDispatchContext } from './LocationContext.mjs';
+import { LocationContext } from './LocationContext.mjs';
 import getLocalCountryName from './utils/getLocalCountryName.mjs';
 
 // export default function CountrySelector({ countries, countryName, dispatch })
 export default function CountrySelector() {
-	const locationData = useContext(LocationContext);
-	const dispatch = useContext(LocationDispatchContext);
+	const { locationData, dispatch } = useContext(LocationContext);
+	// const dispatch = useContext(LocationDispatchContext);
 	const { countries, countryName, cityName, geolocation } = locationData;
 
 	if (countries.length === 0) return;

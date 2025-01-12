@@ -1,7 +1,7 @@
 // todo
 // change background and colors with year seasons
 // light and dark theme fit to browser setup
-// add info about wmo codes
+// material ui
 
 import { useEffect, useState, useReducer } from 'react';
 // import { useGeolocation } from './useGeolocation';
@@ -11,7 +11,7 @@ import CitySelector from './CitySelector.jsx';
 import getNearestCity from './utils/getNearestCity.mjs';
 import CircularProgress from '@mui/material/CircularProgress';
 // import countriesData from '../data/countries.json'
-import { LocationContext, LocationDispatchContext } from './LocationContext.mjs';
+import { LocationContext } from './LocationContext.mjs';
 
 import './App.scss';
 
@@ -201,34 +201,15 @@ export default function App() {
 			{inProcess && <CircularProgress style={{ color: 'yellow' }} />}
 			{!inProcess && (
 				<>
-					<LocationContext.Provider value={locationData}>
-						<LocationDispatchContext.Provider value={dispatch}>
-							<CountrySelector />
-							<CitySelector />
-						</LocationDispatchContext.Provider>
+					<LocationContext.Provider value={{ locationData, dispatch }}>
+						<CountrySelector />
+						<CitySelector />
 					</LocationContext.Provider>
 				</>
 			)}
 
-			{weatherData && <DaysList weatherData={weatherData} key={cityName} />}
-			{/* <DaysList days={days} /> */}
-
-			{/* <button onClick={getPosition} disabled={isCountriesListLoading}>
-				Get my position
-			</button>
-			{error && <p>{error}</p>}
-			{!isCountriesListLoading && !error && lat && lng && (
-				<p>
-					Your GPS position:{' '}
-					<a
-						target="_blank"
-						rel="noreferrer"
-						href={`https://www.openstreetmap.org/#map=16/${lat}/${lng}`}
-					>
-						{lat}, {lng}
-					</a>
-				</p>
-			)} */}
+			{/* {weatherData && <DaysList weatherData={weatherData} key={cityName} />} */}
+			{weatherData && <DaysList weatherData={weatherData} />}
 		</main>
 	);
 }
