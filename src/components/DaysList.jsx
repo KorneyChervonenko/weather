@@ -1,7 +1,12 @@
+import { LocationContext } from './LocationContext.mjs';
 import Day from './Day.jsx';
 import './DaysList.scss';
+import { useContext } from 'react';
 
-export default function DaysList({ weatherData }) {
+export default function DaysList() {
+	const { locationData, dispatch, weatherData, inProcess } = useContext(LocationContext);
+	if (inProcess) return;
+	if (!weatherData) return;
 	return (
 		<ol className="days-list">
 			{weatherData.time.map((date, i) => {

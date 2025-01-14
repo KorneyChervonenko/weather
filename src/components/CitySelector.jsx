@@ -5,10 +5,10 @@ import { LocationContext } from './LocationContext.mjs';
 export default function CitySelector() {
 	// const locationData = useContext(LocationContext);
 	// const dispatch = useContext(LocationDispatchContext);
-	const { locationData, dispatch } = useContext(LocationContext);
+	const { locationData, dispatch, inProcess } = useContext(LocationContext);
 
 	const { countries, countryName, cityName, geolocation } = locationData;
-
+	if (inProcess) return;
 	if (countries.length === 0 || countryName === null) return;
 	const selectedCountry = countries.find((country) => country.name === countryName);
 	return (

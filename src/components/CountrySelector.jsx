@@ -5,11 +5,12 @@ import getLocalCountryName from './utils/getLocalCountryName.mjs';
 
 // export default function CountrySelector({ countries, countryName, dispatch })
 export default function CountrySelector() {
-	const { locationData, dispatch } = useContext(LocationContext);
+	const { locationData, dispatch, inProcess } = useContext(LocationContext);
 	// const dispatch = useContext(LocationDispatchContext);
 	const { countries, countryName, cityName, geolocation } = locationData;
 
 	if (countries.length === 0) return;
+	if (inProcess) return;
 	return (
 		<form>
 			<h3 className="visually-hidden">Country Selector</h3>
