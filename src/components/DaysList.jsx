@@ -8,7 +8,7 @@ export default function DaysList() {
 	if (inProcess) return;
 	if (!weatherData) return;
 	return (
-		<ol className="days-list">
+		<ul className="days-list">
 			{weatherData.time.map((date, i) => {
 				const dayData = {
 					date: new Date(date).toLocaleDateString(navigator.languages, {
@@ -25,7 +25,7 @@ export default function DaysList() {
 				};
 				return <Day dayData={dayData} key={dayData.name} />;
 			})}
-		</ol>
+		</ul>
 	);
 }
 

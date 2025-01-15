@@ -7,8 +7,9 @@
 import DaysList from './DaysList.jsx';
 import CountrySelector from './CountrySelector.jsx';
 import CitySelector from './CitySelector.jsx';
+import ProcessIndicator from './ProcessIndicator.jsx';
 
-import CircularProgress from '@mui/material/CircularProgress';
+// import CircularProgress from '@mui/material/CircularProgress';
 
 import './App.scss';
 import { LocationProvider } from './LocationContext.mjs';
@@ -21,6 +22,7 @@ export default function App() {
 				<CountrySelector />
 				<CitySelector />
 				<DaysList />
+				<ProcessIndicator />
 			</LocationProvider>
 		</main>
 	);
