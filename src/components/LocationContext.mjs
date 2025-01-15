@@ -8,7 +8,11 @@ const locationInitData = {
 	geolocation: null,
 };
 
-const initStatus = { isCountriesListLoading: false, isGeoLocationDetecting: false };
+const initStatus = {
+	isCountriesListLoading: false,
+	isGeoLocationDetecting: false,
+	isWeatherFetching: false,
+};
 
 function locationReducer(state, action) {
 	switch (action.type) {
@@ -35,8 +39,9 @@ function LocationProvider({ children }) {
 	const [locationData, dispatch] = useReducer(locationReducer, locationInitData);
 	const { countries, countryName, cityName, geolocation } = locationData;
 
-	const [{ isCountriesListLoading, isGeoLocationDetecting }, setStatus] = useState(initStatus);
-	const inProcess = isCountriesListLoading || isGeoLocationDetecting;
+	const [{ isCountriesListLoading, isGeoLocationDetecting, isWeatherFetching }, setStatus] =
+		useState(initStatus);
+	const inProcess = isCountriesListLoading || isGeoLocationDetecting || isWeatherFetching;
 	// useEffect(function () {}, []);
 	const [weatherData, setWeatherData] = useState(undefined);
 
@@ -57,6 +62,7 @@ function LocationProvider({ children }) {
 						`longitude=${longitude}` +
 						'&daily=weathercode,temperature_2m_max,temperature_2m_min';
 
+					setStatus((currStatus) => ({ ...currStatus, isWeatherFetching: true }));
 					const weatherRes = await fetch(weatherURL);
 					const weatherData = await weatherRes.json();
 					// console.log(weatherData.daily);
@@ -64,6 +70,7 @@ function LocationProvider({ children }) {
 				} catch (err) {
 					alert(err);
 				} finally {
+					setStatus((currStatus) => ({ ...currStatus, isWeatherFetching: false }));
 				}
 				// console.log(geoData);
 			}
@@ -134,7 +141,7 @@ function LocationProvider({ children }) {
 
 				navigator.geolocation.getCurrentPosition(
 					(position) => {
-						console.log('detect geolocation in progress...');
+						// console.log('detect geolocation in progress...');
 
 						const { latitude, longitude } = position.coords;
 						const detectedLocation = getNearestCity({ latitude, longitude }, newCountries);

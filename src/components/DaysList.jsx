@@ -1,7 +1,7 @@
+import { useContext } from 'react';
 import { LocationContext } from './LocationContext.mjs';
 import Day from './Day.jsx';
 import './DaysList.scss';
-import { useContext } from 'react';
 
 export default function DaysList() {
 	const { locationData, dispatch, weatherData, inProcess } = useContext(LocationContext);
